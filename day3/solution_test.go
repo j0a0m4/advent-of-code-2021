@@ -11,23 +11,23 @@ import (
 	"testing"
 )
 
+var inputs = Report{
+	{0, 0, 1, 0, 0},
+	{1, 1, 1, 1, 0},
+	{1, 0, 1, 1, 0},
+	{1, 0, 1, 1, 1},
+	{1, 0, 1, 0, 1},
+	{0, 1, 1, 1, 1},
+	{0, 0, 1, 1, 1},
+	{1, 1, 1, 0, 0},
+	{1, 0, 0, 0, 0},
+	{1, 1, 0, 0, 1},
+	{0, 0, 0, 1, 0},
+	{0, 1, 0, 1, 0},
+}
+
 func TestSolution1(t *testing.T) {
 	is := assert.New(t)
-	inputs := Report{
-		{0, 0, 1, 0, 0},
-		{1, 1, 1, 1, 0},
-		{1, 0, 1, 1, 0},
-		{1, 0, 1, 1, 1},
-		{1, 0, 1, 0, 1},
-		{0, 1, 1, 1, 1},
-		{0, 0, 1, 1, 1},
-		{1, 1, 1, 0, 0},
-		{1, 0, 0, 0, 0},
-		{1, 1, 0, 0, 1},
-		{0, 0, 0, 1, 0},
-		{0, 1, 0, 1, 0},
-	}
-
 	gamma, epsilon := 22, 9
 	power := gamma * epsilon
 	got, err := Solution1(inputs)
@@ -37,29 +37,14 @@ func TestSolution1(t *testing.T) {
 
 func TestRunSolution1(t *testing.T) {
 	is := assert.New(t)
-	inputs := readInput()
-	got, err := Solution1(inputs)
+	report := readInput()
+	got, err := Solution1(report)
 	fmt.Printf("Power Consumption: %d \n", got)
 	is.NoErr(err)
 }
 
 func TestSolution2(t *testing.T) {
 	is := assert.New(t)
-	inputs := Report{
-		{0, 0, 1, 0, 0},
-		{1, 1, 1, 1, 0},
-		{1, 0, 1, 1, 0},
-		{1, 0, 1, 1, 1},
-		{1, 0, 1, 0, 1},
-		{0, 1, 1, 1, 1},
-		{0, 0, 1, 1, 1},
-		{1, 1, 1, 0, 0},
-		{1, 0, 0, 0, 0},
-		{1, 1, 0, 0, 1},
-		{0, 0, 0, 1, 0},
-		{0, 1, 0, 1, 0},
-	}
-
 	o2, co2 := 23, 10
 	lifeSupport := o2 * co2
 	got, err := Solution2(inputs)
@@ -69,50 +54,22 @@ func TestSolution2(t *testing.T) {
 
 func TestRunSolution2(t *testing.T) {
 	is := assert.New(t)
-	inputs := readInput()
-	got, err := Solution2(inputs)
+	report := readInput()
+	got, err := Solution2(report)
 	fmt.Printf("Life support rating: %d \n", got)
 	is.NoErr(err)
 }
 
 func TestReport_OxygenGeneratorRate(t *testing.T) {
 	is := assert.New(t)
-	report := Report{
-		{0, 0, 1, 0, 0},
-		{1, 1, 1, 1, 0},
-		{1, 0, 1, 1, 0},
-		{1, 0, 1, 1, 1},
-		{1, 0, 1, 0, 1},
-		{0, 1, 1, 1, 1},
-		{0, 0, 1, 1, 1},
-		{1, 1, 1, 0, 0},
-		{1, 0, 0, 0, 0},
-		{1, 1, 0, 0, 1},
-		{0, 0, 0, 1, 0},
-		{0, 1, 0, 1, 0},
-	}
-	res, err := report.OxygenGeneratorRate()
+	res, err := inputs.OxygenGeneratorRate()
 	is.Equal(res, 23)
 	is.NoErr(err)
 }
 
 func TestReport_CO2ScrubberRate(t *testing.T) {
 	is := assert.New(t)
-	report := Report{
-		{0, 0, 1, 0, 0},
-		{1, 1, 1, 1, 0},
-		{1, 0, 1, 1, 0},
-		{1, 0, 1, 1, 1},
-		{1, 0, 1, 0, 1},
-		{0, 1, 1, 1, 1},
-		{0, 0, 1, 1, 1},
-		{1, 1, 1, 0, 0},
-		{1, 0, 0, 0, 0},
-		{1, 1, 0, 0, 1},
-		{0, 0, 0, 1, 0},
-		{0, 1, 0, 1, 0},
-	}
-	res, err := report.CO2ScrubberRate()
+	res, err := inputs.CO2ScrubberRate()
 	is.Equal(res, 10)
 	is.NoErr(err)
 }
@@ -206,8 +163,9 @@ func TestBits_ToDecimal(t *testing.T) {
 	is := assert.New(t)
 	b := Bits{1, 0, 1, 1, 0}
 	want := 22
-	decimal, _ := b.ToDecimal()
+	decimal, err := b.ToDecimal()
 	is.Equal(decimal, want)
+	is.NoErr(err)
 }
 
 func readInput() Report {
