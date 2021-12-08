@@ -9,10 +9,106 @@ import (
 	"strings"
 )
 
-func Solution() {
-	numbers, bingoCards := readInput()
-	fmt.Println(numbers)
-	fmt.Println(bingoCards)
+var inputNumbers, bingoCards = readInput()
+
+func Solution1() int {
+	return FirstToWin(inputNumbers, bingoCards)
+}
+
+func Solution2() int {
+	return LastToWin(inputNumbers, bingoCards)
+}
+
+func FirstToWin(numbers []int, cards [][][]int) int {
+	var chosenNumbers []int
+	for i, number := range numbers {
+		chosenNumbers = append(chosenNumbers, number)
+		if i < 5 {
+			continue
+		}
+		for _, card := range cards {
+			if CheckBingo(chosenNumbers, card) {
+				return CalculateScore(chosenNumbers, card)
+			}
+		}
+	}
+	return -1
+}
+
+func LastToWin(numbers []int, cards [][][]int) int {
+	var chosenNumbers []int
+	for i, number := range numbers {
+		chosenNumbers = append(chosenNumbers, number)
+		if i < 5 {
+			continue
+		}
+		for j, card := range cards {
+			if len(cards) == 1 && CheckBingo(chosenNumbers, card) {
+				return CalculateScore(chosenNumbers, card)
+			} else if len(cards) == 1 {
+				continue
+			} else if CheckBingo(chosenNumbers, card) {
+				cards = append(cards[:j], cards[j+1:]...)
+			}
+		}
+	}
+	return -1
+}
+
+func CalculateScore(numbers []int, card [][]int) int {
+	var sum int
+	set := make(map[int]bool)
+
+	for _, row := range card {
+		for _, value := range row {
+			set[value] = true
+			sum += value
+		}
+	}
+
+	for _, value := range numbers {
+		if _, found := set[value]; found {
+			sum -= value
+		}
+	}
+
+	return sum * numbers[len(numbers)-1]
+}
+
+func CheckBingo(chosenNumbers []int, card [][]int) bool {
+	for _, combination := range append(card, Rotate(card)...) {
+		if Bingo(chosenNumbers, combination) {
+			return true
+		}
+	}
+	return false
+}
+
+func Bingo(chosenNumbers, bingoNumbers []int) bool {
+	set := make(map[int]bool)
+	for _, value := range chosenNumbers {
+		set[value] = true
+	}
+
+	for _, value := range bingoNumbers {
+		if _, found := set[value]; !found {
+			return false
+		}
+	}
+
+	return true
+}
+
+func Rotate(inputs [][]int) (rotated [][]int) {
+	rowSize := len(inputs[0])
+	for i := 0; i < rowSize; i++ {
+		var buffer []int
+		for _, row := range inputs {
+			buffer = append(buffer, row[i])
+		}
+		rotated = append(rotated, buffer)
+	}
+	return
 }
 
 func SplitRow(row string) (res []string) {
@@ -69,8 +165,8 @@ func scanInput(reader io.Reader) (numbers []int, inputs [][][]int) {
 		} else if len(scanner.Text()) == 0 && memory == nil {
 			continue
 		}
-
 		if len(scanner.Text()) == 0 && len(memory) != 0 {
+			//memory = append(memory, Rotate(memory)...)
 			inputs = append(inputs, memory)
 			memory = [][]int{}
 		} else {
